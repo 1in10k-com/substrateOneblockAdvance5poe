@@ -2,6 +2,8 @@
 members = [
     "node",
     "pallets/template",
+    # a26，1315s，编译前需要把存证模块添加到node template对应的cargotoml workspace里。
+    "pallets/poe",
     "runtime",
 ]
 [profile.release]
