@@ -265,6 +265,11 @@ impl pallet_sudo::Config for Runtime {
 impl pallet_template::Config for Runtime {
 	type Event = Event;
 }
+// aa33，2000，添加对应的poe模块实现
+impl pallet_poe::Config for Runtime {
+	type MaxClaimLength = ConstU32<512>;
+	type Event = Event;
+}
 
 // Create the runtime by composing the FRAME pallets that were previously configured.
 construct_runtime!(
@@ -283,6 +288,8 @@ construct_runtime!(
 		Sudo: pallet_sudo,
 		// Include the custom logic from the pallet-template in the runtime.
 		TemplateModule: pallet_template,
+		// aa34,2049 把poe模块引入到construct_runtime的枚举里，之后即可cargo build --release编译，然后./target/release/node-template --dev 启动本地节点程序。mmmi
+		PoeModule: pallet_poe,
 	}
 );
 
