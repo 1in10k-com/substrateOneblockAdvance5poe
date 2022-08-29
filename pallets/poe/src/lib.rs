@@ -1,10 +1,17 @@
-//a8,代表不使用std标签，就一定使用no_std
+//aa8,代表不使用std标签，就一定使用no_std
 #![cfg_attr(not(feature = "std"), no_std)]
 
-//a9,导出poe模块定义的内容，注意，并不是用其它模块的内容，而是让外部用此模块的内容，mmmi。
+//aa9,导出poe模块定义的内容，注意，并不是用其它模块的内容，而是让外部用此模块的内容，mmmi。
 pub use pallet::*;
 
-//a10，l2，定义poe模块，放到模块空间pallet里，需要用到宏
+// aa40,2656,引入测试需要的对应模块，用test标签表示只有是test时才会引入这些模块。mmmi
+#[cfg(test)]
+mod mock;
+
+#[cfg(test)]
+mod tests;
+
+//aa10，l2，定义poe模块，放到模块空间pallet里，需要用到宏
 #[frame_support::pallet]
 pub mod pallet {
 	// aa11,引入预定义的一些依赖，应该就是之前cargotoml里的frame_support内容。
