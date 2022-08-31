@@ -80,11 +80,17 @@ pub mod pallet {
 	impl<T: Config> Pallet<T> {
 		#[pallet::weight(0)]
 		pub fn create_claim(origin: OriginFor<T>, claim: Vec<u8>) -> DispatchResultWithPostInfo {
+			// aa24，1133s，校验交易发送方，交易为签名交易
+
+			// add220830，aa24.1，ensure_signed 保证 origin 代表一个签名的交易，问号代表：如果结果是 OK(T)，则把 T 赋给 f，如果结果是 Err(E)，则返回该错误
+			// add220831，插件显示sender类型为 <T as Config>::AccountId，使用了完全限定语法，意思是AccountId这个Config trait的关联类型，是来自于类型T而不是其它类型？？？？
 			let sender = ensure_signed(origin)?;
+			// aa25，1143s，l5，校验存证内容hash值，是否超过最大长度。并验证claim还未被存储过
 			let bounded_claim = BoundedVec::<u8, T::MaxClaimLength>::try_from(claim.clone())
 				.map_err(|_| Error::<T>::ClaimTooLong)?;
 			ensure!(!Proofs::<T>::contains_key(&bounded_claim), Error::<T>::ProofAlreadyExist);
 
+			// aa25，1235s，i3，插入键值对，之后触发事件，接着返回ok
 			Proofs::<T>::insert(
 				&bounded_claim,
 				(sender.clone(), frame_system::Pallet::<T>::block_number()),

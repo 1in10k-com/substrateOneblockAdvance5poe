@@ -1,15 +1,14 @@
-// aa41，2720，此时仍有很多错误，就不一一写过成了，直接按视频修改代码后，又新增一个测试create_claim_failed_when_claim_already_exist，最后cargo test -p pallet-poe，顺利通过测试，视频1-1完结。
+// tests.rs的参考代码，来自：https://github.com/kaichaosun/play-substrate/blob/master/pallets/poe/src/tests.rs
 
 use super::*;
 use crate::{mock::*, Error};
 use frame_support::{assert_noop, assert_ok, BoundedVec};
 
-// aa39，2500，测试创建存证，happy pass？？？？此时使用cargo test -p pallet-poe无效，因为lib.rs里还没有引入子模块tests所需要的模块
-
+// 创建存证成功
 #[test]
 fn create_claim_works() {
 	new_test_ext().execute_with(|| {
-		let claim = vec![0, 1];
+		let claim = vec![1, 2, 3];
 		assert_ok!(PoeModule::create_claim(Origin::signed(1), claim.clone()));
 
 		let bounded_claim =
@@ -21,15 +20,98 @@ fn create_claim_works() {
 	})
 }
 
+// 当同样的存证已经存在时创建失败
 #[test]
 fn create_claim_failed_when_claim_already_exist() {
 	new_test_ext().execute_with(|| {
-		let claim = vec![0, 1];
+		let claim = vec![1, 2, 3];
 		let _ = PoeModule::create_claim(Origin::signed(1), claim.clone());
 
 		assert_noop!(
 			PoeModule::create_claim(Origin::signed(1), claim.clone()),
 			Error::<Test>::ProofAlreadyExist
+		);
+	})
+}
+
+// 转移存证成功测试
+#[test]
+fn transfer_claim_success() {
+	new_test_ext().execute_with(|| {
+		let claim = vec![1, 2, 3];
+		let _ = PoeModule::create_claim(Origin::signed(111), claim.clone());
+
+		assert_ok!(PoeModule::transfer_claim(Origin::signed(111), claim.clone(), 222));
+
+		let bounded_claim =
+			BoundedVec::<u8, <Test as Config>::MaxClaimLength>::try_from(claim.clone()).unwrap();
+		assert_eq!(
+			Proofs::<Test>::get(&bounded_claim),
+			Some((222, frame_system::Pallet::<Test>::block_number()))
+		);
+	})
+}
+
+// 当存证不存在时，转移存证失败
+#[test]
+fn transfer_claim_failed_because_claim_not_exist() {
+	new_test_ext().execute_with(|| {
+		let claim = vec![1, 2, 3];
+		assert_noop!(
+			PoeModule::transfer_claim(Origin::signed(1), claim.clone(), 2),
+			Error::<Test>::ClaimNotExist
+		);
+	})
+}
+
+// 当转移存证不是存证拥有者时，转移存证失败。
+#[test]
+fn transfer_claim_failed_because_not_owner() {
+	new_test_ext().execute_with(|| {
+		let claim = vec![1, 2, 3];
+		let _ = PoeModule::create_claim(Origin::signed(111), claim.clone());
+
+		assert_noop!(
+			PoeModule::transfer_claim(Origin::signed(222), claim.clone(), 333),
+			Error::<Test>::NotClaimOwner
+		);
+	})
+}
+
+// 撤销存证成功
+#[test]
+fn revoke_claim_works() {
+	new_test_ext().execute_with(|| {
+		let claim = vec![1, 2, 3];
+		let _ = PoeModule::create_claim(Origin::signed(111), claim.clone());
+
+		assert_ok!(PoeModule::revoke_claim(Origin::signed(111), claim.clone()));
+	})
+}
+
+// 当目标存证并不存在时，撤销目标存证失败
+#[test]
+fn revoke_claim_failed_because_claim_is_not_exist() {
+	new_test_ext().execute_with(|| {
+		let claim = vec![1, 2, 3];
+
+		assert_noop!(
+			PoeModule::revoke_claim(Origin::signed(12345), claim.clone()),
+			Error::<Test>::ClaimNotExist
+		);
+	})
+}
+
+// 当撤销存证的人不是目标存证拥有者时撤销失败。
+#[test]
+fn revoke_claim_failed_because_wrong_owner() {
+	new_test_ext().execute_with(|| {
+		let claim = vec![1, 2, 3];
+		let _ = PoeModule::create_claim(Origin::signed(1), claim.clone());
+
+		assert_noop!(
+			PoeModule::revoke_claim(Origin::signed(2345), claim.clone()),
+			Error::<Test>::NotClaimOwner
 		);
 	})
 }
