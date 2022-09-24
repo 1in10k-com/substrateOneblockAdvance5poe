@@ -17,8 +17,11 @@ targets = ["x86_64-unknown-linux-gnu"]
 codec = { package = "parity-scale-codec", version = "3.0.0", default-features = false, features = [
 	"derive",
 ] }
+# add220901，这个scale-info不知道哪里来的，即没有指定来自substrate，rust官方crate里似乎也搜索不到mmms。
 scale-info = { version = "2.1.1", default-features = false, features = ["derive"] }
-# aa2,添加了runtime开发所需要的宏和接口
+# aa2,添加了runtime开发所需要的宏和接口		
+# add220901, frame-support在https://github.com/paritytech/substrate.git的 frame/support 目录下，其cargotoml文件定义 name = "frame-support"，所以可以通过
+# frame-support名称找到这个crate。跟它来自 frame/support 目录下只是巧合。可通过搜索 name = "包名" 快速找到包定义的位置
 frame-support = { default-features = false, version = "4.0.0-dev", git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.25"}
 # aa3,包含了系统接口，包含了常用的数据类型，比如区块数blocknumber，hash这样的数据类型（这里可能有口误，说成了frame-support）
 frame-system = { default-features = false, version = "4.0.0-dev", git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.25" }
