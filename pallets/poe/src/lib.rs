@@ -99,7 +99,7 @@ pub mod pallet {
 			Ok(().into())
 		}
 
-		#[pallet::weight(0)]
+		#[pallet::weight(T::WeightInfo::revoke_claim(claim.len() as u32))]
 		pub fn transfer_claim(
 			origin: OriginFor<T>,
 			claim: Vec<u8>,
