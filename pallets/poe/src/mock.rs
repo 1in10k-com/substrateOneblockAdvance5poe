@@ -1,5 +1,3 @@
-// aa35，2334，从template复制粘贴mock，tests，到poe。并做一些修改，mmmi，iiic
-
 use crate as pallet_poe;
 use frame_support::traits::{ConstU16, ConstU32, ConstU64};
 use frame_system as system;
@@ -12,8 +10,6 @@ use sp_runtime::{
 type UncheckedExtrinsic = frame_system::mocking::MockUncheckedExtrinsic<Test>;
 type Block = frame_system::mocking::MockBlock<Test>;
 
-// Configure a mock runtime to test the pallet.
-// aa38，用construct_runtime，构造了test runtime？？？？，至此完成了测试所需的配置，下一步编写tests
 frame_support::construct_runtime!(
 	pub enum Test where
 		Block = Block,
@@ -51,14 +47,12 @@ impl system::Config for Test {
 	type OnSetCode = ();
 	type MaxConsumers = frame_support::traits::ConstU32<16>;
 }
-// aa36，2422，对pallet poe的配置接口进行实现。
+
 impl pallet_poe::Config for Test {
 	type MaxClaimLength = ConstU32<512>;
 	type Event = Event;
 }
 
-// Build genesis storage according to the mock runtime.
-// aa37,2433,提供了一个用来测试的帮助方法，可以对区块的初始状态进行配置
 pub fn new_test_ext() -> sp_io::TestExternalities {
 	system::GenesisConfig::default().build_storage::<Test>().unwrap().into()
 }
