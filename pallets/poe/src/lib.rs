@@ -1,6 +1,7 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
 pub use pallet::*;
+pub use weights::WeightInfo;
 
 #[cfg(test)]
 mod mock;
@@ -11,6 +12,8 @@ mod tests;
 #[cfg(feature = "runtime-benchmarks")]
 mod benchmarking;
 
+pub mod weights;
+
 #[frame_support::pallet]
 pub mod pallet {
 
@@ -18,6 +21,7 @@ pub mod pallet {
 
 	pub use frame_system::pallet_prelude::*;
 
+	use super::WeightInfo;
 	pub use sp_std::prelude::*;
 
 	#[pallet::config]
@@ -26,6 +30,8 @@ pub mod pallet {
 		type MaxClaimLength: Get<u32>;
 
 		type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
+
+		type WeightInfo: WeightInfo;
 	}
 
 	#[pallet::pallet]
@@ -60,7 +66,7 @@ pub mod pallet {
 
 	#[pallet::call]
 	impl<T: Config> Pallet<T> {
-		#[pallet::weight(0)]
+		#[pallet::weight(T::WeightInfo::create_claim(claim.len() as u32))]
 		pub fn create_claim(origin: OriginFor<T>, claim: Vec<u8>) -> DispatchResultWithPostInfo {
 			let sender = ensure_signed(origin)?;
 
