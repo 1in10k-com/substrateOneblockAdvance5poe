@@ -1,3 +1,5 @@
+# 第 6 课作业 2 生成的两个 chain spec 文件分别为 ./homework62.json 和 ./homework62-raw.json
+
 # Substrate Node Template
 
 [![Try on playground](https://img.shields.io/badge/Playground-Node_Template-brightgreen?logo=Parity%20Substrate)](https://docs.substrate.io/playground/) [![Matrix](https://img.shields.io/matrix/substrate-technical:matrix.org)](https://matrix.to/#/#substrate-technical:matrix.org)
@@ -77,6 +79,7 @@ RUST_BACKTRACE=1 ./target/release/node-template -ldebug --dev
 > running. Also, **alice** account will be authority and sudo account as declared in the
 > [genesis state](https://github.com/substrate-developer-hub/substrate-node-template/blob/main/node/src/chain_spec.rs#L49).
 > At the same time the following accounts will be pre-funded:
+>
 > - Alice
 > - Bob
 > - Alice//stash
@@ -102,7 +105,6 @@ dev
 $ ls ./my-chain-state/chains/dev
 db keystore network
 ```
-
 
 ### Connect with Polkadot-JS Apps Front-end
 
@@ -233,4 +235,5 @@ by appending your own. A few useful ones are as follow.
 # Check whether the code is compilable
 ./scripts/docker_run.sh cargo check
 ```
+
 # substrateOneblockAdvance5poe
